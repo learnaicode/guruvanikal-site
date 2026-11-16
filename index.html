@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Guruvanikal · ഗുരുവാണികൾ</title>
+  <meta name="description" content="Guruvanikal: the complete words of Navajyothi Sree Karunakara Guru, held in one lotus, reached by a journey outward to the universe or inward to the atom." />
+  <meta name="theme-color" content="#0a0206" />
+  <meta name="author" content="Gurudath Sadanandan and NAMA" />
+  <meta name="copyright" content="© 2026 Gurudath Sadanandan. All rights reserved." />
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <style>
+    html, body { margin: 0; height: 100%; background: #05040c; color: #f6efe4; font-family: Georgia, 'Times New Roman', serif; }
+    .door { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 14px; padding: 24px; }
+    .door img { width: 84px; height: 84px; animation: breathe 3s ease-in-out infinite; }
+    .door b { font: 900 34px 'Arial Rounded MT Bold', 'Helvetica Neue', Arial, sans-serif; color: #e3245f; letter-spacing: 0.01em; }
+    .door p { margin: 0; font-style: italic; color: rgba(246, 239, 228, 0.62); }
+    @keyframes breathe { 50% { opacity: 0.55; transform: scale(0.96); } }
+  </style>
+</head>
+<body>
+  <div class="door"><img src="logo.svg" alt="" /><b>GURUVANIKAL</b><p id="say">Opening the Guruvanikal…</p></div>
+  <script>
+    // The doorway to Guruvanikal.
+    //
+    // This page never changes. The site itself is built from github.com/learnaicode/guruvanikal and kept
+    // in that repository's `live` branch. Each time this page opens it asks which build is the latest
+    // (version.txt names one commit) and loads that build through jsDelivr. So a new release is seen
+    // here within about five minutes, with nothing to publish again.
+    (async function () {
+      var REPO = 'learnaicode/guruvanikal';
+      var FIRST = '41d76ac3f036868f1d87b6c6bc2744aa0ba080df';     // used only if the latest cannot be asked for
+      var sha = null;
+      try { sha = localStorage.getItem('gv-live'); } catch (e) {}
+      try {
+        var r = await fetch('https://raw.githubusercontent.com/' + REPO + '/live/version.txt?' + Date.now(), { cache: 'no-store' });
+        var t = r.ok ? (await r.text()).trim() : '';
+        if (/^[0-9a-f]{40}$/.test(t)) { sha = t; try { localStorage.setItem('gv-live', t); } catch (e) {} }
+      } catch (e) {}
+      if (!/^[0-9a-f]{40}$/.test(sha || '')) sha = FIRST;
+      var open = async function (s) {
+        var base = 'https://cdn.jsdelivr.net/gh/' + REPO + '@' + s + '/';
+        var res = await fetch(base + 'index.html');
+        if (!res.ok) throw new Error('build ' + s + ' not found');
+        var html = (await res.text()).replace('<head>', '<head><base href="' + base + '">');
+        document.open(); document.write(html); document.close();
+      };
+      try { await open(sha); } catch (e) {
+        try { await open(FIRST); } catch (e2) { document.getElementById('say').textContent = 'The Guruvanikal could not be opened just now. Please try again in a moment.'; }
+      }
+    })();
+  </script>
+</body>
+</html>
